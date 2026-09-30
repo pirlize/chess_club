@@ -11,6 +11,7 @@ import { Theme } from './core/theme';
 import { ConfirmDialog } from './ui/confirm-dialog';
 import { Icon, type IconName } from './ui/icon';
 import { Logo } from './ui/logo';
+import { SoundMenu } from './ui/sound-menu';
 import { Toasts } from './ui/toasts';
 
 interface NavItem {
@@ -41,6 +42,7 @@ const THEME_META: Record<string, { icon: IconName; label: string }> = {
 @Component({
   selector: 'app-root',
   imports: [
+    SoundMenu,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,

@@ -69,8 +69,8 @@
 <button
   type="button"
   class="ctl"
-  (click)="sounds.toggle()"
-  [attr.aria-pressed]="sounds.enabled()"
+  popovertarget="sound-menu"
+  aria-haspopup="dialog"
   [attr.aria-label]="soundLabel"
   [title]="soundLabel"
 >

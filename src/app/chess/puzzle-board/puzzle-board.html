@@ -51,8 +51,8 @@
     <button
       type="button"
       class="btn btn-ghost btn-icon btn-sm"
-      (click)="sounds.toggle()"
-      [attr.aria-pressed]="sounds.enabled()"
+      popovertarget="sound-menu"
+      aria-haspopup="dialog"
       [attr.aria-label]="'sound.label' | transloco"
       [title]="'sound.label' | transloco"
     >

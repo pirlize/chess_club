@@ -739,6 +739,18 @@
     "promotion": "Turn a pawn into a queen."
   },
   "sound": {
-    "label": "Move sounds"
+    "label": "Move sounds",
+    "title": "Move sounds",
+    "volume": "Volume",
+    "credit": "Piano, Retro, SFX and Futuristic: Enigmahack, from lichess (AGPLv3+).",
+    "set": {
+      "wood": "Wood",
+      "click": "Click",
+      "piano": "Piano",
+      "nes": "Retro (8-bit)",
+      "sfx": "SFX",
+      "futuristic": "Futuristic",
+      "off": "No sound"
+    }
   }
 }

@@ -19,6 +19,7 @@ Greek by default, with English one tap away. Live demo: https://chess-square.pir
 - Programme as a list or a **month calendar** (`?view=calendar`), add-to-calendar (`.ics`), results tables and an optional link (e.g. chess-results.com); weekly timetable and directions on the home page; news; books by level with search, club-copy status and a details view.
 - **Analysis board** (`/analysis`, or "Ανάλυση" on any game): paste a PGN or FEN, try moves, write notes. Switch on the engine for a live evaluation, best line and best-move arrow; **Review the game** checks every move, gives each side an accuracy score, marks inaccuracies/mistakes/blunders on an evaluation graph and lists the key moments, and can write `?!`/`?`/`??` with "better was …" into the notes. Export as PGN, as a ready-made coaching prompt for ChatGPT/Claude/Gemini, or to Lichess (names stripped).
 - Installable, works offline for anything opened before, light/dark themes, Greek/English switch, shows a banner when a new version is ready.
+- **Move sounds** with a choice of sets, like lichess (speaker button on any board): soft wood or click (generated in the browser), piano, retro, SFX and futuristic (recorded), or none, plus volume. Remembered per device.
 - **Move notation switch** (the Nf3 / Ιζ3 button in the top bar): English or Greek notation (pieces Ρ, Β, Π, Α, Ι and files α–θ, on the board too), independent of the language and remembered per device. Only the display changes; stored games and exported PGN always use standard SAN.
 
 **Admin** (`/admin`)
@@ -127,4 +128,4 @@ npm run build
 
 ## Licence
 
-GPL-3.0-or-later (see `LICENSE`), because chessground and chessops are GPL-3.0.
+GPL-3.0-or-later (see `LICENSE`), because chessground and chessops are GPL-3.0. The recorded move sounds in `public/sounds/` are by Enigmahack, from lichess, under AGPL-3.0-or-later (see `public/sounds/LICENSE.md`).
