@@ -1,0 +1,441 @@
+<div class="page">
+  @if (stage() !== 'edit') {
+    <a routerLink="/admin/games" class="back-link">
+      <app-icon name="arrow-left" /> {{ 'gameEditor.back' | transloco }}
+    </a>
+  }
+
+  @if (backup(); as saved) {
+    <div class="callout restore" role="status">
+      <app-icon name="info" />
+      <p>
+        {{ 'gameEditor.restore' | transloco: { when: (saved.savedAt | clubDate: 'relative') } }}
+      </p>
+      <button type="button" class="btn btn-primary btn-sm" (click)="restoreBackup()">
+        {{ 'gameEditor.restoreAction' | transloco }}
+      </button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="discardBackup()">
+        {{ 'gameEditor.discard' | transloco }}
+      </button>
+    </div>
+  }
+
+  @if (loadError(); as message) {
+    <app-error-state [message]="message" (retry)="reload()" />
+  } @else if (loading()) {
+    <div class="skeleton" style="height: 28rem"></div>
+  } @else {
+    @switch (stage()) {
+      @case ('import') {
+        <section class="import">
+          <h1>{{ 'gameEditor.importTitle' | transloco }}</h1>
+          <p class="lede">{{ 'gameEditor.importLede' | transloco }}</p>
+
+          <div
+            class="drop card"
+            [class.dragging]="dragging()"
+            (dragover)="$event.preventDefault(); dragging.set(true)"
+            (dragleave)="dragging.set(false)"
+            (drop)="onDrop($event)"
+          >
+            <label for="pgn" class="sr-only">{{ 'gameEditor.pgnLabel' | transloco }}</label>
+            <textarea
+              #pgn
+              id="pgn"
+              class="input pgn"
+              spellcheck="false"
+              [value]="pgnText()"
+              (input)="pgnText.set(pgn.value)"
+              placeholder='[Event "Open Chess Square"]
+[White "Άννα"]
+[Black "Λέων"]
+
+1. e4 e5 2. Nf3 {…} Nc6 …'
+            ></textarea>
+            <div class="drop-actions">
+              <label class="btn btn-secondary">
+                <app-icon name="upload" /> {{ 'gameEditor.chooseFile' | transloco }}
+                <input
+                  type="file"
+                  accept=".pgn,.txt,text/plain,application/x-chess-pgn"
+                  class="sr-only"
+                  (change)="onFileChosen($event)"
+                />
+              </label>
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="!pgnText().trim()"
+                (click)="importPgn()"
+              >
+                {{ 'gameEditor.continue' | transloco }} <app-icon name="chevron-right" />
+              </button>
+            </div>
+          </div>
+
+          @if (importError(); as problem) {
+            <div class="callout" data-tone="danger" role="alert">
+              <p>{{ problem | transloco }}</p>
+            </div>
+          }
+
+          <div class="or">
+            <span>{{ 'gameEditor.or' | transloco }}</span>
+          </div>
+
+          <button type="button" class="btn btn-secondary from-board" (click)="startFromBoard()">
+            <app-icon name="board" /> {{ 'gameEditor.fromBoard' | transloco }}
+          </button>
+          <p class="hint center">{{ 'gameEditor.fromBoardHint' | transloco }}</p>
+        </section>
+      }
+
+      @case ('pick') {
+        <section class="import">
+          <h1>{{ 'gameEditor.pickTitle' | transloco }}</h1>
+          <p class="lede">{{ 'gameEditor.pickLede' | transloco: { n: candidates().length } }}</p>
+          <ul class="stack picks">
+            @for (game of candidates(); track $index) {
+              @let d = describe(game);
+              <li>
+                <button type="button" class="card pick" (click)="useGame(game)">
+                  <strong>{{ d.title }}</strong>
+                  <span>{{ d.subtitle }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+          <button type="button" class="btn btn-ghost" (click)="stage.set('import')">
+            <app-icon name="arrow-left" /> {{ 'common.back' | transloco }}
+          </button>
+        </section>
+      }
+
+      @case ('edit') {
+        <form [formRoot]="form" class="edit">
+          <header class="editor-head">
+            <h1>{{ headline() }}</h1>
+            @if (item(); as saved) {
+              @if (saved.published) {
+                <a
+                  class="btn btn-ghost btn-sm"
+                  [href]="'/games/' + saved.id"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  {{ 'editor.view' | transloco }} <app-icon name="external" />
+                </a>
+              }
+            }
+          </header>
+
+          @if (warnings().length) {
+            <div class="callout warnings" role="status">
+              <app-icon name="info" />
+              <div>
+                @for (warning of warnings(); track $index) {
+                  <p>{{ describeWarning(warning) }}</p>
+                }
+              </div>
+            </div>
+          }
+
+          <div class="workspace">
+            <section class="board-col" [attr.aria-label]="'game.board' | transloco">
+              <div class="board-wrap">
+                @if (session.boardView(); as view) {
+                  <app-board
+                    [view]="view"
+                    (moved)="onBoardMove($event)"
+                    (shapesChange)="session.setShapes($event)"
+                  />
+                }
+                @if (promotion()) {
+                  <div
+                    class="promotion"
+                    role="dialog"
+                    [attr.aria-label]="'gameEditor.promotionAria' | transloco"
+                  >
+                    <p>{{ 'gameEditor.promoteTo' | transloco }}</p>
+                    <div class="pieces">
+                      @for (p of promotionPieces; track p.piece) {
+                        <button
+                          type="button"
+                          (click)="choosePromotion(p.piece)"
+                          [attr.aria-label]="'gameEditor.pieces.' + p.piece | transloco"
+                        >
+                          {{ promotionColor() === 'white' ? p.white : p.black }}
+                        </button>
+                      }
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-sm"
+                      (click)="choosePromotion(null)"
+                    >
+                      {{ 'common.cancel' | transloco }}
+                    </button>
+                  </div>
+                }
+              </div>
+              <app-game-controls [autoplay]="false" />
+            </section>
+
+            <section class="side">
+              <div
+                class="segmented tabs"
+                role="tablist"
+                [attr.aria-label]="'gameEditor.panels' | transloco"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  [attr.aria-selected]="tab() === 'notes'"
+                  (click)="tab.set('notes')"
+                >
+                  <app-icon name="edit" /> {{ 'gameEditor.notes' | transloco }}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  [attr.aria-selected]="tab() === 'details'"
+                  (click)="tab.set('details')"
+                >
+                  <app-icon name="file" /> {{ 'gameEditor.details' | transloco }}
+                </button>
+              </div>
+
+              @if (tab() === 'notes') {
+                <div class="card annotate">
+                  @if (selected(); as sel) {
+                    <div class="annotate-head">
+                      <strong class="move-label">{{ sel.label | san }}</strong>
+                      @if (sel.inVariation) {
+                        <span class="badge" data-tone="blue">{{
+                          'gameEditor.sideLine' | transloco
+                        }}</span>
+                      }
+                    </div>
+
+                    <div
+                      class="nags"
+                      role="group"
+                      [attr.aria-label]="'gameEditor.moveSymbol' | transloco"
+                    >
+                      @for (nag of moveNags; track nag.code) {
+                        <button
+                          type="button"
+                          class="nag-btn"
+                          [attr.data-tone]="nag.tone"
+                          [attr.aria-pressed]="sel.nags.includes(nag.code)"
+                          [title]="nag.label | transloco"
+                          (click)="session.toggleNag(nag.code)"
+                        >
+                          {{ nag.symbol }}
+                        </button>
+                      }
+                    </div>
+                    <details class="position-nags">
+                      <summary>{{ 'gameEditor.whoStands' | transloco }}</summary>
+                      <div
+                        class="nags"
+                        role="group"
+                        [attr.aria-label]="'gameEditor.positionAssessment' | transloco"
+                      >
+                        @for (nag of positionNags; track nag.code) {
+                          <button
+                            type="button"
+                            class="nag-btn small"
+                            [attr.aria-pressed]="sel.nags.includes(nag.code)"
+                            [title]="nag.label | transloco"
+                            (click)="session.toggleNag(nag.code)"
+                          >
+                            {{ nag.symbol }}
+                          </button>
+                        }
+                      </div>
+                    </details>
+
+                    <label for="note" class="sr-only">{{
+                      'gameEditor.noteFor' | transloco: { move: (sel.label | san) }
+                    }}</label>
+                    <textarea
+                      #note
+                      id="note"
+                      class="input note"
+                      [value]="sel.comment"
+                      (input)="session.setComment(note.value)"
+                      [placeholder]="'gameEditor.notePlaceholder' | transloco"
+                    ></textarea>
+
+                    <div class="annotate-actions">
+                      @if (sel.shapes) {
+                        <button
+                          type="button"
+                          class="btn btn-ghost btn-sm"
+                          (click)="session.setShapes([])"
+                        >
+                          <app-icon name="x" />
+                          @if (sel.shapes === 1) {
+                            {{ 'gameEditor.clearArrowsOne' | transloco }}
+                          } @else {
+                            {{ 'gameEditor.clearArrows' | transloco: { n: sel.shapes } }}
+                          }
+                        </button>
+                      }
+                      @if (sel.inVariation) {
+                        <button
+                          type="button"
+                          class="btn btn-ghost btn-sm"
+                          (click)="session.promoteCurrent()"
+                        >
+                          <app-icon name="arrow-up" /> {{ 'gameEditor.makeMain' | transloco }}
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="btn btn-ghost btn-sm danger"
+                        (click)="deleteFromHere()"
+                      >
+                        <app-icon name="trash" /> {{ 'gameEditor.deleteFromHere' | transloco }}
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="annotate-head">
+                      <strong class="move-label">{{ 'gameEditor.intro' | transloco }}</strong>
+                    </div>
+                    <label for="summary" class="sr-only">{{
+                      'gameEditor.intro' | transloco
+                    }}</label>
+                    <textarea
+                      id="summary"
+                      class="input note intro"
+                      [formField]="form.summary"
+                      [placeholder]="'gameEditor.introPlaceholder' | transloco"
+                    ></textarea>
+                    <p class="hint">{{ 'gameEditor.introHint' | transloco }}</p>
+                    @if (rootShapes()) {
+                      <button
+                        type="button"
+                        class="btn btn-ghost btn-sm"
+                        (click)="session.setShapes([])"
+                      >
+                        <app-icon name="x" /> {{ 'gameEditor.clearAllArrows' | transloco }}
+                      </button>
+                    }
+                  }
+                </div>
+
+                <div class="card moves">
+                  <app-move-list [result]="model().result" emptyText="gameEditor.firstMove" />
+                </div>
+                <p class="board-hint pointer-fine">
+                  <app-icon name="info" />
+                  {{ 'gameEditor.hintFine' | transloco }}
+                </p>
+                <p class="board-hint pointer-coarse">
+                  <app-icon name="info" />
+                  {{ 'gameEditor.hintCoarse' | transloco }}
+                </p>
+              } @else {
+                <div class="card details">
+                  <div class="form-grid">
+                    <div class="field span-2">
+                      <label for="title">
+                        {{ 'gameEditor.title' | transloco }}
+                        <span class="muted">{{ 'common.optional' | transloco }}</span>
+                      </label>
+                      <input
+                        id="title"
+                        class="input"
+                        [formField]="form.title"
+                        [placeholder]="'gameEditor.titlePlaceholder' | transloco"
+                      />
+                      <app-field-error [field]="form.title" />
+                    </div>
+                    <div class="field">
+                      <label for="white">
+                        <span class="piece-dot white"></span> {{ 'gameEditor.white' | transloco }}
+                      </label>
+                      <input id="white" class="input" [formField]="form.white" />
+                      <app-field-error [field]="form.white" />
+                    </div>
+                    <div class="field">
+                      <label for="black">
+                        <span class="piece-dot black"></span> {{ 'gameEditor.black' | transloco }}
+                      </label>
+                      <input id="black" class="input" [formField]="form.black" />
+                      <app-field-error [field]="form.black" />
+                    </div>
+                    <div class="field">
+                      <label for="result">{{ 'gameEditor.result' | transloco }}</label>
+                      <select id="result" class="input" [formField]="form.result">
+                        @for (r of results; track r.value) {
+                          <option [value]="r.value">
+                            {{ 'result.' + r.value | transloco }} ({{ r.symbol }})
+                          </option>
+                        }
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="category">{{ 'gameEditor.type' | transloco }}</label>
+                      <select id="category" class="input" [formField]="form.category">
+                        @for (c of categories; track c.value) {
+                          <option [value]="c.value">{{ c.label | transloco }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="event">{{ 'gameEditor.event' | transloco }}</label>
+                      <input
+                        id="event"
+                        class="input"
+                        [formField]="form.event"
+                        [placeholder]="'gameEditor.eventPlaceholder' | transloco"
+                      />
+                    </div>
+                    <div class="field">
+                      <label for="date">{{ 'gameEditor.date' | transloco }}</label>
+                      <input id="date" class="input" type="date" [formField]="form.playedOn" />
+                    </div>
+                    <div class="field">
+                      <label for="eco">
+                        {{ 'gameEditor.eco' | transloco }}
+                        <span class="muted">{{ 'common.optional' | transloco }}</span>
+                      </label>
+                      <input id="eco" class="input" [formField]="form.eco" placeholder="C41" />
+                      <app-field-error [field]="form.eco" />
+                    </div>
+                    <div class="field">
+                      <label for="opening">{{ 'gameEditor.opening' | transloco }}</label>
+                      <input
+                        id="opening"
+                        class="input"
+                        [formField]="form.opening"
+                        [placeholder]="'gameEditor.openingPlaceholder' | transloco"
+                      />
+                    </div>
+                    <div class="field span-2 publish">
+                      <label class="switch">
+                        <input type="checkbox" [formField]="form.published" />
+                        {{ 'gameEditor.visible' | transloco }}
+                      </label>
+                      <span class="hint">{{ 'gameEditor.visibleHint' | transloco }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </section>
+          </div>
+
+          <app-editor-bar
+            [isNew]="isNew()"
+            [dirty]="dirty()"
+            [saving]="saving()"
+            (delete)="remove()"
+          />
+        </form>
+      }
+    }
+  }
+</div>

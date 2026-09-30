@@ -1,0 +1,146 @@
+// Design tokens. Light is the default; dark applies from the OS setting unless
+// the user picked a theme (html[data-theme], set by core/theme.ts).
+
+@mixin dark {
+  color-scheme: dark;
+  --bg: #14130f;
+  --surface: #1d1b17;
+  --surface-2: #27241f;
+  --surface-hover: rgb(255 245 225 / 0.07);
+  --border: #332f28;
+  --border-strong: #4a443a;
+  --text: #f0ebe1;
+  --text-muted: #a89f8f;
+  --text-faint: #5f584d;
+
+  --accent: #5cb389;
+  --accent-hover: #72c49b;
+  --accent-soft: #1d3a2c;
+  --accent-text: #86d3ab;
+  --on-accent: #0c1a12;
+  --gold: #d8ad5a;
+  --gold-soft: #3a2f1a;
+  --blue: #7fa8e8;
+  --blue-soft: #1c2a40;
+  --purple: #b39ae8;
+  --purple-soft: #2c2440;
+  --danger: #ff8a7a;
+  --danger-soft: #3a1d19;
+  --on-danger: #2a0d09;
+
+  --note-bg: #24211a;
+  --note-border: #b8934a;
+  --piece-dot-black-border: #8a8275;
+
+  --inverse-bg: #f0ebe1;
+  --inverse-text: #1d1b17;
+  --accent-on-inverse: #245a41;
+  --success-on-inverse: #245a41;
+  --danger-on-inverse: #b42318;
+
+  --sq-light: #d9c4a1;
+  --sq-dark: #9b7553;
+  --sq-last-move: rgb(170 200 60 / 0.45);
+  --sq-selected: rgb(60 150 90 / 0.55);
+  --sq-dest: rgb(40 110 60 / 0.6);
+
+  --nag-brilliant: #4cc3d9;
+  --nag-good: #6cc983;
+  --nag-interesting: #b39ae8;
+  --nag-dubious: #e3ae52;
+  --nag-mistake: #f39152;
+  --nag-blunder: #f36c61;
+
+  --eval-white: #dcd5c7;
+  --eval-black: #0e0d0b;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 6px 16px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.5);
+  --shadow-board: 0 2px 8px rgb(0 0 0 / 0.45), 0 12px 32px rgb(0 0 0 / 0.3);
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f5f2ea;
+  --surface: #fffdf8;
+  --surface-2: #efe9dd;
+  --surface-hover: rgb(60 45 20 / 0.07);
+  --border: #e4dccb;
+  --border-strong: #cdc1aa;
+  --text: #1f1c17;
+  --text-muted: #6a6254;
+  --text-faint: #b3aa98;
+
+  --accent: #2e6a4f;
+  --accent-hover: #245a41;
+  --accent-soft: #dcebe2;
+  --accent-text: #245a41;
+  --on-accent: #ffffff;
+  --gold: #9a6b12;
+  --gold-soft: #f6ead0;
+  --blue: #2f5fa8;
+  --blue-soft: #e1eaf7;
+  --purple: #6d4fb3;
+  --purple-soft: #ece6f8;
+  --danger: #b42318;
+  --danger-soft: #fbe4e1;
+  --on-danger: #ffffff;
+
+  --note-bg: #f5edda;
+  --note-border: #c9a45c;
+  --piece-dot-black-border: #1b1a17;
+
+  --inverse-bg: #24211c;
+  --inverse-text: #f7f3ea;
+  --accent-on-inverse: #8fd6ae;
+  --success-on-inverse: #8fd6ae;
+  --danger-on-inverse: #ff9b8f;
+
+  --sq-light: #efdab7;
+  --sq-dark: #b5895f;
+  --sq-last-move: rgb(155 199 0 / 0.41);
+  --sq-selected: rgb(20 85 30 / 0.5);
+  --sq-dest: rgb(20 85 30 / 0.5);
+
+  --nag-brilliant: #13849a;
+  --nag-good: #2c8446;
+  --nag-interesting: #6d4fb3;
+  --nag-dubious: #a36a0c;
+  --nag-mistake: #c75a12;
+  --nag-blunder: #c02d24;
+
+  --eval-white: #fffdf8;
+  --eval-black: #4a443b;
+
+  --shadow-sm: 0 1px 2px rgb(40 30 10 / 0.06), 0 1px 3px rgb(40 30 10 / 0.08);
+  --shadow-md: 0 6px 16px rgb(40 30 10 / 0.1);
+  --shadow-lg: 0 16px 40px rgb(40 30 10 / 0.2);
+  --shadow-board: 0 2px 6px rgb(40 30 10 / 0.18), 0 10px 30px rgb(40 30 10 / 0.12);
+
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 13px;
+  --radius-lg: 18px;
+
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
+
+  --header-height: 3.75rem;
+  --content-width: 74rem;
+  --gutter: 1rem;
+
+  @media (min-width: 48rem) {
+    --gutter: 1.5rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark;
+}

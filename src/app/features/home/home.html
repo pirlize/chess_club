@@ -1,0 +1,251 @@
+<div class="page">
+  <section class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">{{ 'home.welcome' | transloco }}</p>
+      <h1>{{ club.name }}</h1>
+      <p class="subtitle">{{ club.subtitle }}</p>
+      <p class="tagline">{{ 'club.tagline' | transloco }}</p>
+    </div>
+    <app-logo class="hero-logo" [full]="true" />
+  </section>
+
+  @if (showInstall()) {
+    <aside class="install card">
+      <app-icon name="download" class="install-icon" />
+      <div class="install-text">
+        <strong>{{ 'home.installTitle' | transloco }}</strong>
+        @if (pwa.canPromptInstall()) {
+          <span>{{ 'home.installPrompt' | transloco }}</span>
+        } @else {
+          <span>{{ 'home.installIos' | transloco }}</span>
+        }
+      </div>
+      @if (pwa.canPromptInstall()) {
+        <button type="button" class="btn btn-primary btn-sm" (click)="pwa.install()">
+          {{ 'home.install' | transloco }}
+        </button>
+      }
+      <button
+        type="button"
+        class="btn btn-ghost btn-icon btn-sm"
+        (click)="pwa.dismissInstall()"
+        [attr.aria-label]="'home.dismiss' | transloco"
+      >
+        <app-icon name="x" />
+      </button>
+    </aside>
+  }
+
+  <section class="section starts" [attr.aria-label]="'home.startsAria' | transloco">
+    <a routerLink="/learn" class="card start beginner">
+      <span class="start-icon" aria-hidden="true">♞</span>
+      <div class="start-text">
+        <strong>{{ 'home.beginnerTitle' | transloco }}</strong>
+        <span>{{ 'home.beginnerText' | transloco }}</span>
+        @if (lessonsDone(); as done) {
+          <span class="start-meta">
+            <app-icon name="check" />
+            {{ 'home.lessonsDone' | transloco: { done: done, total: lessonTotal } }}
+          </span>
+        }
+      </div>
+      <span class="btn btn-primary btn-sm start-cta">
+        {{ (lessonsDone() ? 'home.beginnerContinue' : 'home.beginnerCta') | transloco }}
+      </span>
+    </a>
+    <a routerLink="/learn/puzzles" class="card start puzzle">
+      <span class="start-icon" aria-hidden="true"><app-icon name="bulb" /></span>
+      <div class="start-text">
+        <strong>{{ 'home.puzzleTitle' | transloco }}</strong>
+        <span>{{ 'home.puzzleText' | transloco }}</span>
+        @if (progress.dailySolvedToday()) {
+          <span class="start-meta solved">
+            <app-icon name="check" /> {{ 'home.puzzleSolved' | transloco }}
+          </span>
+        } @else if (progress.streak() > 0) {
+          <span class="start-meta hot">
+            <app-icon name="flame" /> {{ 'learn.streak' | transloco: { n: progress.streak() } }}
+          </span>
+        }
+      </div>
+      <span class="btn btn-secondary btn-sm start-cta">
+        {{ (progress.dailySolvedToday() ? 'home.puzzleMore' : 'home.puzzleCta') | transloco }}
+      </span>
+    </a>
+  </section>
+
+  <section class="section" aria-labelledby="next-up">
+    <div class="section-head">
+      <h2 id="next-up">{{ 'home.nextUp' | transloco }}</h2>
+      <a routerLink="/events">{{ 'home.allEvents' | transloco }}</a>
+    </div>
+    @if (nextEvent(); as e) {
+      <div class="next card">
+        <div class="date-tile big">
+          <span class="month">{{ e.startsAt | clubDate: 'month' }}</span>
+          <span class="day">{{ e.startsAt | clubDate: 'dayOfMonth' }}</span>
+        </div>
+        <div class="next-info">
+          <span class="badge" [attr.data-tone]="kinds[e.kind].tone">{{
+            kinds[e.kind].label | transloco
+          }}</span>
+          <h3>
+            <a [routerLink]="['/events', e.id]">{{ e.title }}</a>
+          </h3>
+          <p>
+            <app-icon name="clock" />
+            {{ e.startsAt | clubDate: 'day' }}, {{ e.startsAt | clubDate: 'time' }}
+            @if (e.endsAt) {
+              – {{ e.endsAt | clubDate: 'time' }}
+            }
+          </p>
+          @if (e.location) {
+            <p><app-icon name="pin" /> {{ e.location }}</p>
+          }
+        </div>
+        <button type="button" class="btn btn-secondary next-cta" (click)="addToCalendar()">
+          <app-icon name="calendar-plus" /> {{ 'home.addToCalendar' | transloco }}
+        </button>
+      </div>
+      @if (laterEvents().length) {
+        <div class="stack later">
+          @for (event of laterEvents(); track event.id) {
+            <app-event-row [event]="event" />
+          }
+        </div>
+      }
+    } @else if (events.isLoading()) {
+      <div class="skeleton" style="height: 7.5rem"></div>
+    } @else if (events.error()) {
+      <p class="muted failed">
+        {{ 'common.loadError' | transloco }} ·
+        <button type="button" class="link" (click)="events.reload()">
+          {{ 'common.tryAgain' | transloco }}
+        </button>
+      </p>
+    } @else {
+      <p class="muted">{{ 'home.noEvents' | transloco }}</p>
+    }
+  </section>
+
+  <section class="section club-info" aria-label="{{ 'home.weekly' | transloco }}">
+    <div class="card week">
+      <h2>{{ 'home.weekly' | transloco }}</h2>
+      <ul>
+        @for (day of week(); track day.day) {
+          <li>
+            <span class="weekday">{{ day.name }}</span>
+            <span class="slots">
+              @for (item of day.items; track $index) {
+                <span class="slot">
+                  {{ item.label | transloco }}
+                  @if (item.time) {
+                    <span class="time">{{ item.time }}</span>
+                  }
+                </span>
+              }
+            </span>
+          </li>
+        }
+      </ul>
+      <p class="hint">{{ 'club.schedule.kidsLevels' | transloco }}</p>
+    </div>
+
+    <div class="card find-us">
+      <h2>{{ 'home.findUs' | transloco }}</h2>
+      <p class="address"><app-icon name="pin" /> {{ 'club.address' | transloco }}</p>
+      <p class="hint">{{ 'club.addressHint' | transloco }}</p>
+      <div class="links">
+        <a class="btn btn-secondary btn-sm" [href]="mapsUrl" target="_blank" rel="noopener">
+          <app-icon name="external" /> {{ 'home.openMaps' | transloco }}
+        </a>
+        <a class="btn btn-ghost btn-sm" [href]="'mailto:' + club.email">
+          <app-icon name="mail" /> {{ club.email }}
+        </a>
+        <a class="btn btn-ghost btn-sm" [href]="club.facebook" target="_blank" rel="noopener">
+          <app-icon name="users" /> Facebook
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="latest-games">
+    <div class="section-head">
+      <h2 id="latest-games">{{ 'home.latestGames' | transloco }}</h2>
+      <a routerLink="/games">{{ 'home.allGames' | transloco }}</a>
+    </div>
+    @if (games.error()) {
+      <p class="muted failed">
+        {{ 'common.loadError' | transloco }} ·
+        <button type="button" class="link" (click)="games.reload()">
+          {{ 'common.tryAgain' | transloco }}
+        </button>
+      </p>
+    } @else if (games.isLoading() && latestGames().length === 0) {
+      <div class="card-grid">
+        <div class="skeleton" style="height: 8.25rem"></div>
+        <div class="skeleton" style="height: 8.25rem"></div>
+      </div>
+    } @else {
+      <div class="card-grid">
+        @for (game of latestGames(); track game.id) {
+          <app-game-card [game]="game" />
+        } @empty {
+          <p class="muted">{{ 'home.noGames' | transloco }}</p>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="section promos">
+    <a routerLink="/games" class="card promo">
+      <app-icon name="sparkle" />
+      <div>
+        <strong>{{ 'home.guessTitle' | transloco }}</strong>
+        <span>{{ 'home.guessText' | transloco }}</span>
+      </div>
+      <app-icon name="chevron-right" class="chev" />
+    </a>
+    <a routerLink="/analysis" class="card promo">
+      <app-icon name="analysis" />
+      <div>
+        <strong>{{ 'home.analysisTitle' | transloco }}</strong>
+        <span>{{ 'home.analysisText' | transloco }}</span>
+      </div>
+      <app-icon name="chevron-right" class="chev" />
+    </a>
+    <a routerLink="/books" class="card promo">
+      <app-icon name="book" />
+      <div>
+        <strong>{{ 'home.booksTitle' | transloco }}</strong>
+        <span>{{ 'home.booksText' | transloco }}</span>
+      </div>
+      <app-icon name="chevron-right" class="chev" />
+    </a>
+  </section>
+
+  <section class="section" aria-labelledby="from-blog">
+    <div class="section-head">
+      <h2 id="from-blog">{{ 'home.fromBlog' | transloco }}</h2>
+      <a routerLink="/blog">{{ 'home.allPosts' | transloco }}</a>
+    </div>
+    <div class="card-grid">
+      @for (post of latestPosts(); track post.id) {
+        <app-post-card [post]="post" />
+      } @empty {
+        @if (posts.isLoading()) {
+          <div class="skeleton" style="height: 10rem"></div>
+        } @else if (posts.error()) {
+          <p class="muted failed">
+            {{ 'common.loadError' | transloco }} ·
+            <button type="button" class="link" (click)="posts.reload()">
+              {{ 'common.tryAgain' | transloco }}
+            </button>
+          </p>
+        } @else {
+          <p class="muted">{{ 'home.noPosts' | transloco }}</p>
+        }
+      }
+    </div>
+  </section>
+</div>

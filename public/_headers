@@ -1,0 +1,11 @@
+/*
+  X-Robots-Tag: noindex, nofollow
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/ngsw-worker.js
+  Cache-Control: no-cache
+
+/ngsw.json
+  Cache-Control: no-cache

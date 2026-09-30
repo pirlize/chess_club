@@ -1,0 +1,40 @@
+@let current = session.current();
+@for (line of lines(); track $index) {
+  @if (line.kind === 'moves') {
+    <div class="moves" [class.variation]="line.depth > 0" [style.--depth]="line.depth">
+      @for (item of line.items; track $index) {
+        @if (item.kind === 'move') {
+          @if (item.number) {
+            <span class="num">{{ item.number }}</span>
+          }
+          <button
+            type="button"
+            class="move"
+            [class.active]="item.node === current"
+            [attr.aria-current]="item.node === current ? 'step' : null"
+            [attr.data-node]="item.node.id"
+            (click)="session.goTo(item.node)"
+          >
+            {{ item.node.san | san }}
+            @for (nag of item.nags; track nag.code) {
+              <span class="nag" [attr.data-tone]="nag.tone" [title]="nag.label | transloco">{{
+                nag.symbol
+              }}</span>
+            }
+          </button>
+        } @else {
+          <span class="inline-note">{{ item.text }}</span>
+        }
+      }
+    </div>
+  } @else {
+    <p class="comment" [class.active]="line.node === current" (click)="session.goTo(line.node)">
+      {{ line.text }}
+    </p>
+  }
+} @empty {
+  <p class="empty">{{ emptyText() | transloco }}</p>
+}
+@if (resultLabel(); as result) {
+  <p class="result">{{ result }}</p>
+}

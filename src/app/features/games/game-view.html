@@ -1,0 +1,156 @@
+@if (game.error(); as error) {
+  <div class="page">
+    @if (isNotFound(error)) {
+      <app-empty-state icon="board" heading="game.notFound" text="game.notFoundText">
+        <a routerLink="/games" class="btn btn-secondary">{{ 'game.allGames' | transloco }}</a>
+      </app-empty-state>
+    } @else {
+      <app-error-state [message]="errorMessage(error)" (retry)="game.reload()" />
+    }
+  </div>
+} @else if (game.value(); as g) {
+  <article class="page game-page">
+    <a routerLink="/games" class="back-link">
+      <app-icon name="arrow-left" /> {{ 'game.allGames' | transloco }}
+    </a>
+
+    @if (parseError(); as problem) {
+      <div class="callout" data-tone="danger" role="alert">
+        <p>{{ problem | transloco }}</p>
+      </div>
+    }
+
+    @if (guessing() && session.tree(); as tree) {
+      <header class="guess-head">
+        <p class="eyebrow">{{ 'guess.title' | transloco }}</p>
+        <h1>{{ title() }}</h1>
+      </header>
+      <app-guess-game [tree]="tree" [gameId]="g.id" (exit)="guessing.set(false)" />
+    } @else {
+      <div class="layout">
+        <header class="game-head">
+          <p class="eyebrow">
+            {{ categories[g.category].label | transloco }}
+            @if (g.event) {
+              · {{ g.event }}
+            }
+            @if (g.playedOn) {
+              · {{ g.playedOn | clubDate }}
+            }
+          </p>
+          <h1>{{ title() }}</h1>
+          <div class="matchup">
+            <span class="side"><span class="piece-dot white"></span>{{ g.white }}</span>
+            <span class="score">{{ g.result | result }}</span>
+            <span class="side"><span class="piece-dot black"></span>{{ g.black }}</span>
+          </div>
+          @if (g.opening || g.eco) {
+            <p class="opening">{{ g.eco }} {{ g.opening }}</p>
+          }
+          @if (!parseError()) {
+            <button
+              type="button"
+              class="btn btn-primary btn-sm guess-btn"
+              (click)="guessing.set(true)"
+            >
+              <app-icon name="sparkle" /> {{ 'guess.title' | transloco }}
+            </button>
+          }
+        </header>
+
+        <section class="board-col" [attr.aria-label]="'game.board' | transloco">
+          <div
+            class="board-wrap"
+            appSwipe
+            (swipeLeft)="session.next()"
+            (swipeRight)="session.prev()"
+          >
+            @if (session.boardView(); as view) {
+              <app-board [view]="view" />
+            } @else {
+              <div class="board-placeholder skeleton"></div>
+            }
+          </div>
+          <div class="progress" aria-hidden="true">
+            <span [style.width.%]="progress() * 100"></span>
+          </div>
+          <app-game-controls />
+        </section>
+
+        <section class="panel" [attr.aria-label]="'game.notesAndMoves' | transloco">
+          @if (note(); as n) {
+            <div class="note card" aria-live="polite">
+              @if (n.atStart) {
+                <p class="note-label">{{ 'game.beforeStart' | transloco }}</p>
+                @if (g.summary) {
+                  <div class="prose note-body" [innerHTML]="g.summary | markdown"></div>
+                }
+                @if (n.comment) {
+                  <p class="note-body plain">{{ n.comment }}</p>
+                }
+                @if (!g.summary && !n.comment) {
+                  <p class="note-empty">{{ 'game.stepHint' | transloco }}</p>
+                }
+              } @else {
+                <div class="note-head">
+                  <p class="note-label">{{ n.label | san }}</p>
+                  @for (nag of n.nags; track nag.code) {
+                    <span class="nag-badge" [attr.data-tone]="nag.tone">
+                      {{ nag.symbol }} {{ nag.label | transloco }}
+                    </span>
+                  }
+                </div>
+                @if (n.comment) {
+                  <p class="note-body plain">{{ n.comment }}</p>
+                } @else {
+                  <p class="note-empty">{{ 'game.noNote' | transloco }}</p>
+                }
+                @if (n.alternatives.length) {
+                  <div class="alternatives">
+                    <span>{{ 'game.alsoPossible' | transloco }}</span>
+                    @for (alt of n.alternatives; track alt.id) {
+                      <button type="button" class="chip" (click)="session.goTo(alt)">
+                        {{ moveLabel(alt) | san }}
+                      </button>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          <div class="moves card">
+            <div class="moves-head">
+              <h2>{{ 'game.moves' | transloco }}</h2>
+              <div class="moves-actions">
+                <a
+                  class="btn btn-ghost btn-sm"
+                  routerLink="/analysis"
+                  [queryParams]="{ game: g.id, ply: currentPly() }"
+                >
+                  <app-icon name="analysis" /> {{ 'game.analyse' | transloco }}
+                </a>
+                <button type="button" class="btn btn-ghost btn-sm" (click)="share()">
+                  <app-icon name="share" /> {{ 'game.share' | transloco }}
+                </button>
+              </div>
+            </div>
+            <app-move-list class="move-list" [result]="g.result" />
+          </div>
+        </section>
+      </div>
+    }
+  </article>
+} @else {
+  <div class="page game-page" aria-busy="true">
+    <div class="skeleton" style="height: 1rem; width: 8rem; margin-bottom: 1rem"></div>
+    <div
+      class="skeleton"
+      style="height: 2.4rem; width: min(100%, 24rem); margin-bottom: 1.5rem"
+    ></div>
+    <div class="layout">
+      <div class="board-col"><div class="board-placeholder skeleton"></div></div>
+      <div class="panel"><div class="skeleton" style="height: 12rem"></div></div>
+    </div>
+  </div>
+}

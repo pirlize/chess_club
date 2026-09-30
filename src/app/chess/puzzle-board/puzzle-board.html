@@ -1,0 +1,52 @@
+<app-board [view]="view()" (moved)="onMove($event)" />
+
+<div class="feedback" [attr.data-state]="state()" aria-live="polite">
+  <span class="status">
+    @switch (state()) {
+      @case ('solved') {
+        <app-icon name="check" />
+        @if (revealed()) {
+          {{ 'puzzle.revealed' | transloco }}
+        } @else if (mistakes() === 0) {
+          {{ 'puzzle.solvedClean' | transloco }}
+        } @else {
+          {{ 'puzzle.solved' | transloco }}
+        }
+      }
+      @case ('wrong') {
+        <app-icon name="x" /> {{ 'puzzle.wrong' | transloco }}
+      }
+      @case ('right') {
+        <app-icon name="check" /> {{ 'puzzle.right' | transloco }}
+      }
+      @default {
+        <span
+          class="piece-dot"
+          [class.white]="side() === 'white'"
+          [class.black]="side() === 'black'"
+        ></span>
+        {{ (side() === 'white' ? 'puzzle.yourMoveWhite' : 'puzzle.yourMoveBlack') | transloco }}
+      }
+    }
+  </span>
+
+  <span class="actions">
+    @if (state() === 'solved') {
+      <button type="button" class="btn btn-ghost btn-sm" (click)="restart()">
+        <app-icon name="first" /> {{ 'puzzle.again' | transloco }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        [disabled]="!!hintSquare()"
+        (click)="showHint()"
+      >
+        <app-icon name="bulb" /> {{ 'puzzle.hint' | transloco }}
+      </button>
+      <button type="button" class="btn btn-ghost btn-sm" (click)="reveal()">
+        <app-icon name="eye" /> {{ 'puzzle.showSolution' | transloco }}
+      </button>
+    }
+  </span>
+</div>

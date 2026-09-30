@@ -1,0 +1,138 @@
+<div class="page">
+  <a routerLink="/learn" class="back-link">
+    <app-icon name="arrow-left" /> {{ 'learn.title' | transloco }}
+  </a>
+
+  <header class="page-header">
+    <p class="eyebrow">{{ 'learn.eyebrow' | transloco }}</p>
+    <h1>{{ 'puzzles.title' | transloco }}</h1>
+    <p class="lede">{{ 'puzzles.lede' | transloco }}</p>
+  </header>
+
+  <app-progress-card />
+
+  <section class="section block" aria-labelledby="daily">
+    @let d = daily();
+    <div class="board-col">
+      @if (d.status === 'ready') {
+        <app-puzzle-board
+          [fen]="d.puzzle.fen"
+          [solution]="d.puzzle.solution"
+          [lastMove]="d.puzzle.lastMove"
+          (solved)="onSolved(d.puzzle, $event, true)"
+        />
+      } @else if (d.status === 'error') {
+        <app-error-state
+          heading="puzzles.unavailable"
+          [message]="'puzzles.unavailableText' | transloco"
+          (retry)="loadDaily()"
+        />
+      } @else {
+        <div class="board-skeleton skeleton"></div>
+      }
+    </div>
+    <div class="info">
+      <h2 id="daily"><app-icon name="sparkle" /> {{ 'puzzles.daily' | transloco }}</h2>
+      <p class="muted">{{ 'puzzles.dailyText' | transloco }}</p>
+      @if (progress.dailySolvedToday()) {
+        <p class="streak-note">
+          <app-icon name="flame" /> {{ 'puzzles.dailyDone' | transloco: { n: progress.streak() } }}
+        </p>
+      }
+      @if (d.status === 'ready') {
+        <dl class="meta">
+          <div>
+            <dt>{{ 'puzzles.rating' | transloco }}</dt>
+            <dd>{{ d.puzzle.rating }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'puzzles.themes' | transloco }}</dt>
+            <dd>
+              @for (t of namedThemes(d.puzzle); track t) {
+                <span class="badge">{{ 'theme.' + t | transloco }}</span>
+              }
+            </dd>
+          </div>
+        </dl>
+      }
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="practice">
+    <h2 id="practice" class="section-title">{{ 'puzzles.practice' | transloco }}</h2>
+    <p class="muted">{{ 'puzzles.practiceText' | transloco }}</p>
+
+    <div class="controls">
+      <div class="chips" role="group" [attr.aria-label]="'puzzles.themes' | transloco">
+        @for (t of themes; track t) {
+          <button
+            type="button"
+            class="chip"
+            [attr.aria-pressed]="!!practice() && activeTheme() === t"
+            (click)="choose(t)"
+          >
+            {{ 'theme.' + t | transloco }}
+          </button>
+        }
+      </div>
+      <div class="segmented" role="radiogroup" [attr.aria-label]="'puzzles.difficulty' | transloco">
+        @for (d of difficulties; track d) {
+          <button
+            type="button"
+            role="radio"
+            [attr.aria-checked]="difficulty() === d"
+            [class.active]="difficulty() === d"
+            (click)="chooseDifficulty(d)"
+          >
+            {{ 'difficulty.' + d | transloco }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (practice(); as p) {
+      <div class="block">
+        <div class="board-col">
+          @if (p.status === 'ready') {
+            <app-puzzle-board
+              [fen]="p.puzzle.fen"
+              [solution]="p.puzzle.solution"
+              [lastMove]="p.puzzle.lastMove"
+              (solved)="onSolved(p.puzzle, $event, false)"
+            />
+          } @else if (p.status === 'error') {
+            <app-error-state
+              heading="puzzles.unavailable"
+              [message]="'puzzles.unavailableText' | transloco"
+              (retry)="nextPractice()"
+            />
+          } @else {
+            <div class="board-skeleton skeleton"></div>
+          }
+        </div>
+        <div class="info">
+          @if (p.status === 'ready') {
+            <dl class="meta">
+              <div>
+                <dt>{{ 'puzzles.rating' | transloco }}</dt>
+                <dd>{{ p.puzzle.rating }}</dd>
+              </div>
+            </dl>
+          }
+          <button type="button" class="btn btn-primary" (click)="nextPractice()">
+            {{ 'puzzles.next' | transloco }} <app-icon name="chevron-right" />
+          </button>
+        </div>
+      </div>
+    } @else {
+      <button type="button" class="btn btn-primary start" (click)="nextPractice()">
+        <app-icon name="sparkle" /> {{ 'puzzles.start' | transloco }}
+      </button>
+    }
+
+    <p class="credit">
+      {{ 'puzzles.credit' | transloco }}
+      <a href="https://lichess.org/training" target="_blank" rel="noopener">lichess.org</a>
+    </p>
+  </section>
+</div>

@@ -1,0 +1,55 @@
+name: CI / Deploy
+
+# Every push and pull request: tests, Worker typecheck and a production build.
+# Pushes to main also apply D1 migrations and deploy to Cloudflare, once the
+# CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets exist.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Never cancel a deploy halfway through; pull request runs can be replaced.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      DEPLOY: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        run: npm test -- --watch=false
+
+      - name: Worker typecheck
+        run: npm run typecheck:worker
+
+      - name: Build
+        run: npm run build
+
+      - name: Apply database migrations
+        if: env.DEPLOY == 'true' && env.CLOUDFLARE_API_TOKEN != ''
+        run: npx wrangler d1 migrations apply chess-club --remote
+
+      - name: Deploy to Cloudflare
+        if: env.DEPLOY == 'true' && env.CLOUDFLARE_API_TOKEN != ''
+        run: npx wrangler deploy
+
+      - name: Deploy skipped
+        if: env.DEPLOY == 'true' && env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "::warning::Not deployed. Add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to deploy automatically."

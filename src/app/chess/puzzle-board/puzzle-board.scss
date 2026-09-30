@@ -1,0 +1,68 @@
+:host {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  min-height: 3rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+
+  &[data-state='right'],
+  &[data-state='solved'] {
+    background: var(--accent-soft);
+    border-color: transparent;
+    color: var(--accent-text);
+  }
+
+  &[data-state='wrong'] {
+    background: var(--danger-soft);
+    border-color: transparent;
+    color: var(--danger);
+    animation: shake 0.3s;
+  }
+
+  &[data-state='solved'] .status {
+    animation: pop 0.35s ease-out;
+  }
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 650;
+  --icon-size: 1.15rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.1rem;
+  --icon-size: 1rem;
+}
+
+@keyframes shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,109 @@
+// Theme for chessground (the board adapter). Base layout and the cburnett piece
+// set come from chessground's own stylesheets, listed in angular.json.
+
+.cg-wrap cg-board {
+  background-color: var(--sq-light);
+  // a8 (top-left) is a light square in both orientations.
+  background-image: repeating-conic-gradient(var(--sq-dark) 0 25%, var(--sq-light) 0 50%);
+  background-size: 25% 25%;
+}
+
+cg-board square.last-move {
+  background-color: var(--sq-last-move);
+}
+
+cg-board square.selected {
+  background-color: var(--sq-selected);
+}
+
+cg-board square.move-dest {
+  background: radial-gradient(var(--sq-dest) 22%, transparent 0);
+}
+
+cg-board square.oc.move-dest {
+  background: radial-gradient(transparent 0%, transparent 79%, var(--sq-dest) 80%);
+}
+
+cg-board square.move-dest:hover {
+  background: var(--sq-dest);
+  opacity: 0.6;
+}
+
+cg-board square.check {
+  background: radial-gradient(
+    ellipse at center,
+    rgb(255 0 0) 0%,
+    rgb(231 0 0) 25%,
+    rgb(169 0 0 / 0) 89%,
+    rgb(158 0 0 / 0) 100%
+  );
+}
+
+// Coordinates sit inside the edge squares (chessground's default puts them
+// partly outside the board): ranks top-left of the left file, files
+// bottom-right of the bottom rank.
+.cg-wrap coords {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(8px, 1.5vw, 11px);
+  line-height: 1;
+  opacity: 1;
+  text-transform: none;
+
+  coord {
+    flex: 1 1 0;
+    transform: none;
+  }
+}
+
+.cg-wrap coords.ranks,
+.cg-wrap coords.ranks.left {
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 100%;
+  flex-flow: column-reverse;
+  align-items: stretch;
+
+  &.black {
+    flex-flow: column;
+  }
+
+  coord {
+    padding: 3px 0 0 3px;
+  }
+}
+
+.cg-wrap coords.files {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 12.5%;
+  flex-flow: row;
+  align-items: flex-end;
+  text-transform: none;
+
+  &.black {
+    flex-flow: row-reverse;
+  }
+
+  coord {
+    padding: 0 3px 2px 0;
+    text-align: right;
+  }
+}
+
+// Each label takes the colour of the other square colour so it stays legible.
+.orientation-white .ranks :nth-child(odd),
+.orientation-white .files :nth-child(odd),
+.orientation-black .ranks :nth-child(even),
+.orientation-black .files :nth-child(even) {
+  color: var(--sq-light);
+}
+
+.orientation-white .ranks :nth-child(even),
+.orientation-white .files :nth-child(even),
+.orientation-black .ranks :nth-child(odd),
+.orientation-black .files :nth-child(odd) {
+  color: var(--sq-dark);
+}

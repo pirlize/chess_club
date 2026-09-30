@@ -1,0 +1,67 @@
+@let startLabel = 'controls.start' | transloco;
+@let prevLabel = 'controls.prev' | transloco;
+@let nextLabel = 'controls.next' | transloco;
+@let endLabel = 'controls.end' | transloco;
+@let flipLabel = 'controls.flip' | transloco;
+<button
+  type="button"
+  class="ctl"
+  (click)="step('first')"
+  [disabled]="!session.hasPrev()"
+  [attr.aria-label]="startLabel"
+  [title]="startLabel"
+>
+  <app-icon name="first" />
+</button>
+<button
+  type="button"
+  class="ctl ctl-main"
+  (click)="step('prev')"
+  [disabled]="!session.hasPrev()"
+  [attr.aria-label]="prevLabel"
+  [title]="prevLabel"
+>
+  <app-icon name="chevron-left" />
+</button>
+@if (autoplay()) {
+  @let playLabel = (playing() ? 'controls.pause' : 'controls.play') | transloco;
+  <button
+    type="button"
+    class="ctl"
+    (click)="togglePlay()"
+    [attr.aria-pressed]="playing()"
+    [attr.aria-label]="playLabel"
+    [title]="playLabel"
+  >
+    <app-icon [name]="playing() ? 'pause' : 'play'" />
+  </button>
+}
+<button
+  type="button"
+  class="ctl ctl-main"
+  (click)="step('next')"
+  [disabled]="!session.hasNext()"
+  [attr.aria-label]="nextLabel"
+  [title]="nextLabel"
+>
+  <app-icon name="chevron-right" />
+</button>
+<button
+  type="button"
+  class="ctl"
+  (click)="step('last')"
+  [disabled]="!session.hasNext()"
+  [attr.aria-label]="endLabel"
+  [title]="endLabel"
+>
+  <app-icon name="last" />
+</button>
+<button
+  type="button"
+  class="ctl"
+  (click)="step('flip')"
+  [attr.aria-label]="flipLabel"
+  [title]="flipLabel"
+>
+  <app-icon name="flip" />
+</button>

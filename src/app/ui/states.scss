@@ -1,0 +1,35 @@
+:host {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.bubble {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  --icon-size: 1.6rem;
+
+  &.error {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+p {
+  margin: 0 0 0.75rem;
+  max-width: 34ch;
+  color: var(--text-muted);
+}

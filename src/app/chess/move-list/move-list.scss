@@ -1,0 +1,100 @@
+:host {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.9;
+}
+
+.moves {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.15rem;
+}
+
+.num {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85em;
+  margin-inline: 0.35rem 0.05rem;
+
+  &:first-child {
+    margin-inline-start: 0;
+  }
+}
+
+.move {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s;
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+
+  &.active {
+    background: var(--accent);
+    color: var(--on-accent);
+
+    .nag {
+      color: inherit;
+    }
+  }
+}
+
+.nag {
+  margin-inline-start: 0.1rem;
+  font-weight: 700;
+  color: var(--nag-color, var(--text-muted));
+}
+
+.variation {
+  margin-inline-start: calc(var(--depth) * 0.9rem);
+  padding-inline-start: 0.7rem;
+  border-inline-start: 2px solid var(--border);
+  font-size: 0.9em;
+  color: var(--text-muted);
+
+  .move {
+    font-weight: 500;
+  }
+}
+
+.inline-note {
+  margin-inline: 0.3rem 0.5rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.comment {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--note-bg);
+  border-inline-start: 3px solid var(--note-border);
+  line-height: 1.55;
+  white-space: pre-line;
+  cursor: pointer;
+
+  &.active {
+    border-inline-start-color: var(--accent);
+  }
+}
+
+.empty {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.result {
+  margin: 0.75rem 0 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

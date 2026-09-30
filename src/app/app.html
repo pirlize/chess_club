@@ -1,0 +1,113 @@
+<a class="skip-link" href="#main">{{ 'app.skip' | transloco }}</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a
+      routerLink="/"
+      class="brand"
+      [attr.aria-label]="'app.homeAria' | transloco: { name: club.name }"
+    >
+      <app-logo />
+      <span class="brand-name">{{ club.name }}</span>
+    </a>
+
+    @if (!inAdmin()) {
+      <nav class="desktop-nav" [attr.aria-label]="'nav.main' | transloco">
+        @for (item of nav; track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }"
+            ariaCurrentWhenActive="page"
+          >
+            {{ item.label | transloco }}
+          </a>
+        }
+      </nav>
+    }
+
+    <div class="topbar-actions">
+      @let greek = notation.style() === 'el';
+      <button
+        type="button"
+        class="btn btn-ghost notation"
+        (click)="notation.toggle()"
+        [attr.aria-label]="
+          ('app.notation' | transloco) +
+          ': ' +
+          ((greek ? 'app.notationEl' : 'app.notationEn') | transloco) +
+          '. ' +
+          ('app.notationSwitch'
+            | transloco: { to: ((greek ? 'app.notationEn' : 'app.notationEl') | transloco) })
+        "
+        [title]="
+          ('app.notation' | transloco) +
+          ': ' +
+          ((greek ? 'app.notationEl' : 'app.notationEn') | transloco)
+        "
+      >
+        <span aria-hidden="true">{{ greek ? 'Ιf3' : 'Nf3' }}</span>
+      </button>
+      <button
+        type="button"
+        class="btn btn-ghost lang"
+        (click)="language.use(otherLanguage().code)"
+        [attr.lang]="otherLanguage().code"
+        [attr.aria-label]="('app.language' | transloco) + ': ' + otherLanguage().label"
+        [title]="otherLanguage().label"
+      >
+        <app-icon name="globe" />
+        <span>{{ otherLanguage().short }}</span>
+      </button>
+      <button
+        type="button"
+        class="btn btn-ghost btn-icon"
+        (click)="theme.cycle()"
+        [attr.aria-label]="(themeMeta().label | transloco) + '. ' + ('app.changeTheme' | transloco)"
+        [title]="themeMeta().label | transloco"
+      >
+        <app-icon [name]="themeMeta().icon" />
+      </button>
+    </div>
+  </div>
+</header>
+
+@if (!pwa.online()) {
+  <div class="banner" role="status">
+    <app-icon name="offline" />
+    {{ 'app.offline' | transloco }}
+  </div>
+}
+
+@if (pwa.updateReady()) {
+  <div class="banner banner-accent" role="status">
+    <app-icon name="sparkle" />
+    {{ 'app.updateReady' | transloco }}
+    <button type="button" class="btn btn-sm btn-primary" (click)="pwa.reload()">
+      {{ 'app.update' | transloco }}
+    </button>
+  </div>
+}
+
+<main id="main" tabindex="-1">
+  <router-outlet />
+</main>
+
+@if (!inAdmin()) {
+  <nav class="tabbar" [attr.aria-label]="'nav.main' | transloco">
+    @for (item of tabs; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        ariaCurrentWhenActive="page"
+      >
+        <app-icon [name]="item.icon" />
+        <span>{{ item.label | transloco }}</span>
+      </a>
+    }
+  </nav>
+}
+
+<app-toasts />
+<app-confirm-dialog />

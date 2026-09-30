@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-board);
+  touch-action: pan-y;
+}

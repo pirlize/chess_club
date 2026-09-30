@@ -1,0 +1,393 @@
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(
+      120% 140% at 100% 0%,
+      color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+
+  @media (min-width: 48rem) {
+    padding: 2.25rem 2.5rem;
+    gap: 2.5rem;
+  }
+}
+
+.hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 1.4rem + 3vw, 3.3rem);
+}
+
+.subtitle {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.tagline {
+  margin: 0.8rem 0 0;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 40ch;
+}
+
+.hero-logo {
+  // Phones: a small badge in the corner so the text keeps its width.
+  align-self: flex-start;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transform: rotate(3deg);
+
+  @media (min-width: 40rem) {
+    align-self: center;
+    width: 9.5rem;
+    height: 9.5rem;
+  }
+}
+
+.install {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 0.85rem;
+  margin-top: 1rem;
+  padding: 0.9rem 3rem 0.9rem 1rem;
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+
+  // Close button pinned to the corner so the text keeps the width on phones.
+  > .btn-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+.install-icon {
+  color: var(--accent-text);
+}
+
+.install-text {
+  flex: 1 1 14rem;
+  display: grid;
+  font-size: 0.9rem;
+
+  span {
+    color: var(--text-muted);
+  }
+}
+
+.next {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: start;
+  padding: 1.25rem;
+
+  @media (min-width: 40rem) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+.date-tile.big {
+  width: 4.25rem;
+  height: 4.5rem;
+
+  .day {
+    font-size: 1.9rem;
+  }
+}
+
+.next-info {
+  h3 {
+    margin: 0.4rem 0 0.35rem;
+    font-size: 1.3rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.15rem 0 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    --icon-size: 0.95rem;
+  }
+}
+
+.next-cta {
+  grid-column: 1 / -1;
+
+  @media (min-width: 40rem) {
+    grid-column: auto;
+  }
+}
+
+.later {
+  margin-top: 0.75rem;
+}
+
+// ---- Weekly timetable & location --------------------------------------------
+
+.club-info {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 52rem) {
+    grid-template-columns: 1.3fr 1fr;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  .hint {
+    margin: 0.75rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+}
+
+.week ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--border);
+
+    &:first-child {
+      border-top: 0;
+    }
+  }
+}
+
+.weekday {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.slots {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.slot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 0.75rem;
+}
+
+.time {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.address {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  font-weight: 600;
+
+  app-icon {
+    margin-top: 0.15rem;
+    color: var(--accent-text);
+  }
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin-top: 1rem;
+  --icon-size: 1rem;
+}
+
+// ---- Start here -----------------------------------------------------------------
+
+.starts {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: 1.25fr 1fr;
+  }
+}
+
+.start {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem 1rem;
+  align-items: center;
+  padding: 1.25rem;
+
+  &.beginner {
+    background:
+      radial-gradient(
+        130% 150% at 100% 0%,
+        color-mix(in srgb, var(--accent) 14%, transparent),
+        transparent 60%
+      ),
+      var(--surface);
+  }
+
+  &.puzzle {
+    background:
+      radial-gradient(
+        130% 150% at 100% 0%,
+        color-mix(in srgb, var(--gold) 14%, transparent),
+        transparent 60%
+      ),
+      var(--surface);
+  }
+}
+
+.start-icon {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 2rem;
+  line-height: 1;
+  --icon-size: 1.6rem;
+
+  .puzzle & {
+    background: var(--gold-soft);
+    color: var(--gold);
+  }
+}
+
+.start-text {
+  display: grid;
+  gap: 0.2rem;
+
+  strong {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 650;
+  }
+
+  > span {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+}
+
+.start-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+  font-weight: 600;
+  --icon-size: 0.95rem;
+
+  &.solved,
+  &:not(.hot) {
+    color: var(--accent-text) !important;
+  }
+
+  &.hot {
+    color: var(--gold) !important;
+  }
+}
+
+.start-cta {
+  grid-column: 1 / -1;
+  justify-self: start;
+  pointer-events: none;
+
+  @media (min-width: 30rem) {
+    grid-column: 2;
+  }
+}
+
+// ---- Promos ---------------------------------------------------------------------
+
+.promos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+}
+
+.promo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  --icon-size: 1.5rem;
+
+  > app-icon:first-child {
+    color: var(--accent-text);
+  }
+
+  div {
+    flex: 1;
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  span {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .chev {
+    --icon-size: 1.1rem;
+    color: var(--text-faint);
+  }
+}
+
+.failed {
+  margin: 0;
+
+  .link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent-text);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

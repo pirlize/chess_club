@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "chess-square",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2026-09-25",
+  "observability": { "enabled": true },
+  // A fixed port that doesn't clash with other local Workers (default is 8787).
+  "dev": { "port": 8791 },
+  "assets": {
+    // The Angular build. Everything except /api/* is served straight from here.
+    "directory": "./dist/chess-club/browser",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "chess-club",
+      // From `npx wrangler d1 create chess-club`; a fork needs its own database id here.
+      "database_id": "d34263bf-62cb-412b-a0e4-f64ac0137630",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

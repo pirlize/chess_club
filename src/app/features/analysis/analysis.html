@@ -1,0 +1,294 @@
+<div class="page">
+  <header class="page-header">
+    <p class="eyebrow">{{ 'analysis.eyebrow' | transloco }}</p>
+    <h1>{{ 'analysis.title' | transloco }}</h1>
+    <p class="lede">{{ 'analysis.lede' | transloco }}</p>
+  </header>
+
+  <div class="layout">
+    <section class="board-col" [attr.aria-label]="'game.board' | transloco">
+      @if (boardView(); as view) {
+        <app-board
+          [view]="view"
+          (moved)="onBoardMove($event)"
+          (shapesChange)="session.setShapes($event)"
+        />
+      } @else {
+        <div class="board-placeholder skeleton"></div>
+      }
+      <app-game-controls [autoplay]="false" />
+    </section>
+
+    <section class="panel">
+      <div class="card block engine">
+        <div class="engine-head">
+          <h2><app-icon name="cpu" /> {{ 'engine.title' | transloco }}</h2>
+          <label class="switch">
+            <span class="sr-only">{{ 'engine.toggle' | transloco }}</span>
+            <input
+              #engineToggle
+              type="checkbox"
+              [checked]="engine.enabled()"
+              (change)="engine.enabled.set(engineToggle.checked)"
+            />
+          </label>
+        </div>
+
+        @if (engine.failed()) {
+          <p class="error" role="alert">{{ 'engine.failed' | transloco }}</p>
+        }
+
+        @if (engine.enabled()) {
+          @let line = engine.line();
+          <div class="evalbar" aria-hidden="true">
+            <span [style.width.%]="engine.whitePercent()"></span>
+          </div>
+          <div class="eval-row" aria-live="polite">
+            <strong class="eval">{{ engine.evalText() || '…' }}</strong>
+            <span class="muted small">
+              @if (line) {
+                {{ 'engine.depth' | transloco: { depth: line.depth } }}
+              } @else {
+                {{ 'engine.thinking' | transloco }}
+              }
+            </span>
+          </div>
+          @if (engine.bestLine(); as pv) {
+            <p class="pv">
+              <span class="muted">{{ 'engine.bestLine' | transloco }}</span> {{ pv | san }}
+            </p>
+          }
+        } @else {
+          <p class="text">{{ 'engine.intro' | transloco }}</p>
+        }
+
+        @let review = engine.review();
+        <div class="review">
+          @switch (review.status) {
+            @case ('idle') {
+              <p class="text">{{ 'engine.reviewText' | transloco }}</p>
+              <button
+                type="button"
+                class="btn btn-secondary wide"
+                [disabled]="!hasMoves()"
+                (click)="engine.runReview()"
+              >
+                <app-icon name="analysis" /> {{ 'engine.review' | transloco }}
+              </button>
+            }
+            @case ('running') {
+              <div class="progress" aria-hidden="true">
+                <span [style.width.%]="(review.done / review.total) * 100"></span>
+              </div>
+              <div class="row between">
+                <span class="muted small" aria-live="polite">
+                  {{ 'engine.reviewing' | transloco: { done: review.done, total: review.total } }}
+                </span>
+                <button type="button" class="btn btn-ghost btn-sm" (click)="engine.cancelReview()">
+                  {{ 'common.cancel' | transloco }}
+                </button>
+              </div>
+            }
+            @case ('ready') {
+              <div class="sides">
+                @for (color of sides; track color) {
+                  <div class="side">
+                    <span class="side-name">
+                      <span
+                        class="piece-dot"
+                        [class.white]="color === 'white'"
+                        [class.black]="color === 'black'"
+                      ></span>
+                      {{ 'analysis.sides.' + color | transloco }}
+                    </span>
+                    <span class="accuracy">
+                      <strong>{{ review.accuracy[color] | number: '1.0-0' }}%</strong>
+                      <span class="muted small">{{ 'engine.accuracy' | transloco }}</span>
+                    </span>
+                    <ul class="counts">
+                      @for (kind of verdictKinds; track kind) {
+                        <li [attr.data-verdict]="kind">
+                          <b>{{ review.counts[color][kind] }}</b>
+                          {{ 'engine.count.' + kind | transloco }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+              <app-eval-graph
+                [moves]="review.moves"
+                [startWin]="review.startWin"
+                [currentPly]="plyNow()"
+                (select)="jumpTo($event)"
+              />
+              @if (keyMoments().length) {
+                <div class="moments">
+                  <p class="label">{{ 'engine.keyMoments' | transloco }}</p>
+                  <ul>
+                    @for (m of keyMoments(); track m.node.id) {
+                      <li>
+                        <button
+                          type="button"
+                          class="moment"
+                          [attr.data-verdict]="m.verdict"
+                          [attr.aria-current]="session.current() === m.node"
+                          (click)="jumpTo(m.node)"
+                        >
+                          <strong
+                            >{{ moveLabel(m.node) | san
+                            }}{{ m.verdict === 'blunder' ? '??' : '?' }}</strong
+                          >
+                          @if (m.bestLabel) {
+                            <span class="muted">{{
+                              'engine.betterWas' | transloco: { move: (m.bestLabel | san) }
+                            }}</span>
+                          }
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+              <div class="row">
+                <button type="button" class="btn btn-primary" (click)="applyReview()">
+                  <app-icon name="edit" /> {{ 'engine.apply' | transloco }}
+                </button>
+                <button type="button" class="btn btn-ghost" (click)="engine.clearReview()">
+                  {{ 'engine.close' | transloco }}
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="card block">
+        <h2>{{ 'analysis.loadTitle' | transloco }}</h2>
+        <label for="paste" class="sr-only">{{ 'analysis.pasteLabel' | transloco }}</label>
+        <textarea
+          #paste
+          id="paste"
+          class="input paste"
+          spellcheck="false"
+          [value]="pasted()"
+          (input)="pasted.set(paste.value)"
+          [placeholder]="'analysis.pastePlaceholder' | transloco"
+        ></textarea>
+        @if (loadError(); as problem) {
+          <p class="error" role="alert">{{ problem | transloco }}</p>
+        }
+        <div class="row">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="!pasted().trim()"
+            (click)="load()"
+          >
+            {{ 'analysis.load' | transloco }}
+          </button>
+          <button type="button" class="btn btn-ghost" (click)="newBoard()">
+            <app-icon name="board" /> {{ 'analysis.newBoard' | transloco }}
+          </button>
+        </div>
+      </div>
+
+      <div class="card block">
+        @if (selected(); as sel) {
+          <label for="note" class="label">
+            @if (sel.label) {
+              {{ 'analysis.noteFor' | transloco: { move: (sel.label | san) } }}
+            } @else {
+              {{ 'analysis.noteStart' | transloco }}
+            }
+          </label>
+          <textarea
+            #note
+            id="note"
+            class="input note"
+            [value]="sel.comment"
+            (input)="session.setComment(note.value)"
+            [placeholder]="'analysis.notePlaceholder' | transloco"
+          ></textarea>
+        }
+        <app-move-list class="moves" />
+      </div>
+
+      <div class="card block">
+        <h2><app-icon name="sparkle" /> {{ 'analysis.aiTitle' | transloco }}</h2>
+        <p class="text">{{ 'analysis.aiText' | transloco }}</p>
+        <div class="choices">
+          <div class="field">
+            <label for="level" class="label">{{ 'analysis.aiLevel' | transloco }}</label>
+            <select
+              #levelSelect
+              id="level"
+              class="input"
+              [value]="level()"
+              (change)="setLevel(levelSelect.value)"
+            >
+              @for (l of levels; track l) {
+                <option [value]="l">{{ 'analysis.levels.' + l | transloco }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <span class="label" id="side-label">{{ 'analysis.aiSide' | transloco }}</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="side-label">
+              @for (s of sides; track s) {
+                <button
+                  type="button"
+                  role="radio"
+                  [attr.aria-checked]="side() === s"
+                  [class.active]="side() === s"
+                  (click)="side.set(s)"
+                >
+                  <span
+                    class="piece-dot"
+                    [class.white]="s === 'white'"
+                    [class.black]="s === 'black'"
+                  ></span>
+                  {{ 'analysis.sides.' + s | transloco }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-primary wide" (click)="copyForAi()">
+          <app-icon name="copy" /> {{ 'analysis.aiCopy' | transloco }}
+        </button>
+        <p class="warning"><app-icon name="info" /> {{ 'analysis.aiWarning' | transloco }}</p>
+      </div>
+
+      <div class="card block">
+        <h2><app-icon name="analysis" /> {{ 'analysis.lichessTitle' | transloco }}</h2>
+        <p class="text">{{ 'analysis.lichessText' | transloco }}</p>
+        <button
+          type="button"
+          class="btn btn-secondary wide"
+          [disabled]="sending()"
+          (click)="openInLichess()"
+        >
+          @if (sending()) {
+            <span class="spinner"></span>
+          } @else {
+            <app-icon name="external" />
+          }
+          {{ 'analysis.lichessOpen' | transloco }}
+        </button>
+      </div>
+
+      <div class="card block">
+        <h2>{{ 'analysis.exportTitle' | transloco }}</h2>
+        <div class="row">
+          <button type="button" class="btn btn-secondary" (click)="copyPgn()">
+            <app-icon name="copy" /> {{ 'analysis.copyPgn' | transloco }}
+          </button>
+          <button type="button" class="btn btn-ghost" (click)="downloadPgn()">
+            <app-icon name="download" /> {{ 'analysis.downloadPgn' | transloco }}
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

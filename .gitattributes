@@ -1,0 +1,2 @@
+# LF everywhere (matches Prettier and the Linux CI), whatever the local git settings.
+* text=auto eol=lf

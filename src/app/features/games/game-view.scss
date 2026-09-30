@@ -1,0 +1,269 @@
+// Phones: header, board (sticky on tall screens), notes, moves.
+// Desktop: board on the left; header, notes and moves on the right.
+
+.back-link {
+  // The tab bar already leads back to Games on phones.
+  @media (max-width: 47.99rem) {
+    display: none;
+  }
+}
+
+.game-page {
+  @media (max-width: 47.99rem) {
+    padding-top: 1rem;
+  }
+}
+
+.callout {
+  margin-bottom: 1rem;
+}
+
+.layout {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 64rem) {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 26rem);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'board head'
+      'board panel';
+    column-gap: 2.5rem;
+    row-gap: 1.25rem;
+    align-items: start;
+
+    .game-head {
+      grid-area: head;
+    }
+
+    .board-col {
+      grid-area: board;
+    }
+
+    .panel {
+      grid-area: panel;
+    }
+  }
+}
+
+.game-head {
+  .eyebrow {
+    margin-bottom: 0.25rem;
+  }
+
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.45rem, 1.1rem + 1.6vw, 2.2rem);
+  }
+}
+
+.matchup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.65rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  .side {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+}
+
+.score {
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.opening {
+  margin: 0.3rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.board-col {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+
+  > * {
+    width: 100%;
+    min-width: min(100%, 18rem);
+  }
+
+  // Tall phones: the board stays put while the notes scroll underneath.
+  @media (max-width: 63.99rem) and (min-height: 44rem) {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 5;
+    padding-block: 0.5rem;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    background: var(--bg);
+
+    > * {
+      max-width: calc(100dvh - var(--header-height) - var(--bottom-nav-height, 0px) - 15rem);
+    }
+  }
+
+  // Desktop: board and controls fit the window height.
+  @media (min-width: 64rem) {
+    position: sticky;
+    top: calc(var(--header-height) + 1rem);
+
+    > * {
+      max-width: calc(100dvh - var(--header-height) - 11.5rem);
+    }
+  }
+}
+
+.board-wrap {
+  touch-action: pan-y;
+}
+
+.board-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.progress {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.2s ease-out;
+  }
+}
+
+.panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.note {
+  padding: 1rem 1.1rem;
+  border-inline-start: 4px solid var(--note-border);
+  background: var(--note-bg);
+  max-height: 45dvh;
+  overflow-y: auto;
+}
+
+.note-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.note-label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-size: 1.1rem;
+}
+
+.nag-badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--nag-color, var(--text-muted));
+  background: color-mix(in srgb, var(--nag-color, var(--text-muted)) 14%, transparent);
+}
+
+.note-body {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+
+  &.plain {
+    white-space: pre-line;
+    line-height: 1.6;
+  }
+}
+
+.note-empty {
+  margin: 0.4rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.alternatives {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  .chip {
+    min-height: 1.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+.moves {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0.5rem 0 0;
+}
+
+.moves-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem 0 1.1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+}
+
+.move-list {
+  padding: 0.5rem 1.1rem 1.1rem;
+  min-height: 0;
+
+  // On desktop the list scrolls on its own and follows the selected move.
+  @media (min-width: 64rem) {
+    max-height: calc(100dvh - var(--header-height) - 22rem);
+    min-height: 12rem;
+    overflow-y: auto;
+  }
+}
+
+.moves-actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.guess-btn {
+  margin-top: 0.85rem;
+  --icon-size: 1rem;
+}
+
+.guess-head {
+  margin-bottom: 1rem;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2rem);
+  }
+}

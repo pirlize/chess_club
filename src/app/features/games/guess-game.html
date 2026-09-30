@@ -1,0 +1,123 @@
+@switch (phase()) {
+  @case ('choose') {
+    <div class="choose card">
+      <h2><app-icon name="sparkle" /> {{ 'guess.title' | transloco }}</h2>
+      <p>{{ 'guess.intro' | transloco }}</p>
+      @if (best(); as b) {
+        <p class="muted">{{ 'guess.best' | transloco: { correct: b.correct, total: b.total } }}</p>
+      }
+      <p class="label">{{ 'guess.pickSide' | transloco }}</p>
+      <div class="sides">
+        <button type="button" class="btn btn-secondary" (click)="start('white')">
+          <span class="piece-dot white"></span> {{ 'analysis.sides.white' | transloco }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="start('black')">
+          <span class="piece-dot black"></span> {{ 'analysis.sides.black' | transloco }}
+        </button>
+      </div>
+      <button type="button" class="btn btn-ghost" (click)="exit.emit()">
+        {{ 'common.cancel' | transloco }}
+      </button>
+    </div>
+  }
+  @default {
+    <div class="play">
+      <div class="board-col">
+        @if (view(); as v) {
+          <app-board [view]="v" (moved)="onMove($event)" />
+        }
+        <div class="progress" aria-hidden="true">
+          <span [style.width.%]="total() ? (done() / total()) * 100 : 0"></span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="score card">
+          <span class="points"><app-icon name="star" /> {{ points() }} / {{ maxPoints() }}</span>
+          <span class="muted">{{ 'guess.moveOf' | transloco: { n: done(), total: total() } }}</span>
+        </div>
+
+        @if (phase() === 'done') {
+          <div class="card result">
+            <app-icon name="trophy" />
+            <h2>{{ 'guess.finished' | transloco }}</h2>
+            <p>{{ 'guess.finishedText' | transloco: { points: points(), max: maxPoints() } }}</p>
+            <div class="row">
+              <button type="button" class="btn btn-primary" (click)="start(side())">
+                {{ 'guess.again' | transloco }}
+              </button>
+              <button type="button" class="btn btn-ghost" (click)="exit.emit()">
+                {{ 'guess.backToGame' | transloco }}
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="card turn" [attr.data-kind]="feedback()?.kind ?? 'idle'" aria-live="polite">
+            @if (feedback(); as f) {
+              @switch (f.kind) {
+                @case ('right') {
+                  <p class="headline"><app-icon name="check" /> {{ 'guess.right' | transloco }}</p>
+                }
+                @case ('wrong') {
+                  <p class="headline"><app-icon name="x" /> {{ 'guess.wrong' | transloco }}</p>
+                }
+                @case ('revealed') {
+                  <p class="headline"><app-icon name="eye" /> {{ 'guess.revealed' | transloco }}</p>
+                }
+              }
+              @if (f.node; as move) {
+                <p class="move">
+                  {{ moveLabel(move) | san }}
+                  @for (code of move.nags; track code) {
+                    @if (nagInfo(code); as nag) {
+                      <span
+                        class="nag"
+                        [attr.data-tone]="nag.tone"
+                        [title]="nag.label | transloco"
+                        >{{ nag.symbol }}</span
+                      >
+                    }
+                  }
+                </p>
+                @if (move.comment) {
+                  <p class="note">{{ move.comment }}</p>
+                }
+              }
+            } @else {
+              <p class="headline">{{ 'guess.yourTurn' | transloco }}</p>
+            }
+            @if (reply(); as r) {
+              <div class="reply">
+                <p class="muted small">
+                  {{ 'guess.reply' | transloco }} <strong>{{ moveLabel(r) | san }}</strong>
+                </p>
+                @if (r.comment) {
+                  <p class="note">{{ r.comment }}</p>
+                }
+              </div>
+            }
+            @if (waiting()) {
+              <p class="muted small">{{ 'guess.opponent' | transloco }}</p>
+            } @else if (tries() >= 2) {
+              <p class="muted small">{{ 'guess.hint' | transloco }}</p>
+            }
+          </div>
+
+          <div class="row">
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm"
+              [disabled]="waiting()"
+              (click)="reveal()"
+            >
+              <app-icon name="eye" /> {{ 'guess.show' | transloco }}
+            </button>
+            <button type="button" class="btn btn-ghost btn-sm" (click)="exit.emit()">
+              <app-icon name="x" /> {{ 'guess.stop' | transloco }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+}

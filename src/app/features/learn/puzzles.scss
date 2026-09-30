@@ -1,0 +1,108 @@
+.block {
+  display: grid;
+  gap: 1.25rem;
+  align-items: start;
+
+  @media (min-width: 56rem) {
+    grid-template-columns: minmax(0, 32rem) minmax(0, 1fr);
+    gap: 2rem;
+  }
+}
+
+.board-col {
+  width: min(100%, 32rem);
+}
+
+.board-skeleton {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.info {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.5rem;
+    --icon-size: 1.3rem;
+
+    app-icon {
+      color: var(--gold);
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .btn {
+    justify-self: start;
+  }
+}
+
+.streak-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--nag-mistake);
+  --icon-size: 1.1rem;
+}
+
+.meta {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  dt {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    min-width: 5.5rem;
+  }
+
+  dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.section-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.5rem;
+}
+
+.controls {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+
+  .segmented {
+    justify-self: start;
+  }
+}
+
+.start {
+  margin-bottom: 1rem;
+}
+
+.credit {
+  margin: 1.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
