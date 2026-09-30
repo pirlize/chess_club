@@ -8,14 +8,14 @@ import {
   input,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { SanPipe } from '../../core/notation';
+import { SanPipe, SanTextPipe } from '../../core/notation';
 import { GameSession } from '../game-session';
 import { buildLines } from './move-lines';
 
 /** Book-style notation with notes and variations. Reads the surrounding `GameSession`. */
 @Component({
   selector: 'app-move-list',
-  imports: [TranslocoPipe, SanPipe],
+  imports: [TranslocoPipe, SanPipe, SanTextPipe],
   templateUrl: './move-list.html',
   styleUrl: './move-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

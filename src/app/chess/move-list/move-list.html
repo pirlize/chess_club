@@ -23,13 +23,13 @@
             }
           </button>
         } @else {
-          <span class="inline-note">{{ item.text }}</span>
+          <span class="inline-note">{{ item.text | sanText }}</span>
         }
       }
     </div>
   } @else {
     <p class="comment" [class.active]="line.node === current" (click)="session.goTo(line.node)">
-      {{ line.text }}
+      {{ line.text | sanText }}
     </p>
   }
 } @empty {

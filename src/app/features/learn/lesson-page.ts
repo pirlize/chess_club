@@ -12,6 +12,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { BoardThumbnail } from '../../chess/board/board';
 import { PuzzleBoard } from '../../chess/puzzle-board/puzzle-board';
 import { MarkdownPipe } from '../../core/format';
+import { SanTextPipe } from '../../core/notation';
 import { Language } from '../../core/i18n';
 import { Progress } from '../../core/progress';
 import { pageTitle } from '../../core/title';
@@ -23,7 +24,16 @@ import { exerciseCount, lessonBySlug, LESSONS } from './lessons';
 /** One beginner lesson: explanations with boards, and small exercises. */
 @Component({
   selector: 'app-lesson-page',
-  imports: [RouterLink, TranslocoPipe, MarkdownPipe, BoardThumbnail, PuzzleBoard, Icon, EmptyState],
+  imports: [
+    RouterLink,
+    TranslocoPipe,
+    MarkdownPipe,
+    SanTextPipe,
+    BoardThumbnail,
+    PuzzleBoard,
+    Icon,
+    EmptyState,
+  ],
   template: `
     <div class="page page-narrow">
       <a routerLink="/learn" class="back-link">
@@ -42,11 +52,11 @@ import { exerciseCount, lessonBySlug, LESSONS } from './lessons';
         <ol class="steps">
           @for (step of l.steps; track $index; let i = $index) {
             <li class="step card">
-              <div class="prose text" [innerHTML]="step.text[lang()] | markdown"></div>
+              <div class="prose text" [innerHTML]="step.text[lang()] | sanText | markdown"></div>
               @if (step.exercise; as ex) {
                 <div class="exercise">
                   <p class="task">
-                    <app-icon name="sparkle" /> {{ ex.task[lang()] }}
+                    <app-icon name="sparkle" /> {{ ex.task[lang()] | sanText }}
                     @if (solved().has(i)) {
                       <span class="badge" data-tone="accent"><app-icon name="check" /></span>
                     }

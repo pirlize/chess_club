@@ -93,6 +93,23 @@ cg-board square.check {
   }
 }
 
+// Greek notation (html[data-notation=el], set by core/notation.ts): files α–θ.
+// Chessground always writes a…h in DOM order (Black's view only reverses the
+// flex direction), so the nth label is always the nth file.
+[data-notation='el'] .cg-wrap coords.files coord {
+  font-size: 0;
+
+  &::after {
+    font-size: clamp(8px, 1.5vw, 11px);
+  }
+
+  @each $i, $letter in (1: 'α', 2: 'β', 3: 'γ', 4: 'δ', 5: 'ε', 6: 'ζ', 7: 'η', 8: 'θ') {
+    &:nth-child(#{$i})::after {
+      content: $letter;
+    }
+  }
+}
+
 // Each label takes the colour of the other square colour so it stays legible.
 .orientation-white .ranks :nth-child(odd),
 .orientation-white .files :nth-child(odd),

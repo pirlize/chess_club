@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { SanPipe } from '../../core/notation';
+import { SanPipe, SanTextPipe } from '../../core/notation';
 import { Board } from '../../chess/board/board';
 import type { BoardView } from '../../chess/board-renderer';
 import { ChessRules, uciToMove } from '../../chess/chess-rules';
@@ -42,7 +42,7 @@ const STARS_PER_GAME = 5;
  */
 @Component({
   selector: 'app-guess-game',
-  imports: [TranslocoPipe, SanPipe, Board, Icon],
+  imports: [TranslocoPipe, SanPipe, SanTextPipe, Board, Icon],
   templateUrl: './guess-game.html',
   styleUrl: './guess-game.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

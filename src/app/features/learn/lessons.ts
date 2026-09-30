@@ -67,7 +67,7 @@ export const LESSONS: Lesson[] = [
       },
       {
         text: {
-          el: 'Οι κάθετες **στήλες** έχουν γράμματα **a–h** και οι οριζόντιες **γραμμές** αριθμούς **1–8**. Έτσι κάθε τετράγωνο έχει όνομα: εδώ φωτίζεται το **e4**.',
+          el: 'Οι κάθετες **στήλες** έχουν γράμματα **a–h** (στην ελληνική σημειογραφία **α–θ**) και οι οριζόντιες **γραμμές** αριθμούς **1–8**. Έτσι κάθε τετράγωνο έχει όνομα: εδώ φωτίζεται το **e4**.',
           en: 'The vertical **files** are lettered **a–h** and the horizontal **ranks** numbered **1–8**, so every square has a name: here **e4** is highlighted.',
         },
         fen: EMPTY,
@@ -94,7 +94,9 @@ export const LESSONS: Lesson[] = [
             '| Αξιωματικός | B | Α |',
             '| Ίππος | N | Ι |',
             '',
-            'Τα πιόνια δεν έχουν γράμμα. Με το κουμπί **Nf3 / Ιf3** πάνω δεξιά διαλέγεις ποια σημειογραφία βλέπεις σε όλη την εφαρμογή.',
+            'Στην ελληνική σημειογραφία και οι στήλες γράφονται με ελληνικά γράμματα, **α β γ δ ε ζ η θ**: το `e4` γίνεται `ε4` και το `Nf3` γίνεται `Ιζ3`. Τα πιόνια δεν έχουν γράμμα.',
+            '',
+            'Με το κουμπί **`Nf3` / `Ιζ3`** πάνω δεξιά διαλέγεις ποια σημειογραφία βλέπεις σε όλη την εφαρμογή.',
           ].join('\n'),
           en: [
             'Each piece has a **letter** used to write moves down. There are two conventions, English (international) and Greek:',
@@ -107,7 +109,9 @@ export const LESSONS: Lesson[] = [
             '| Bishop | B | Α |',
             '| Knight | N | Ι |',
             '',
-            'Pawns have no letter. The **Nf3 / Ιf3** button at the top right picks which notation you see throughout the app.',
+            'In Greek notation the files use Greek letters too, **α β γ δ ε ζ η θ**: `e4` becomes `ε4` and `Nf3` becomes `Ιζ3`. Pawns have no letter.',
+            '',
+            'The **`Nf3` / `Ιζ3`** button at the top right picks which notation you see throughout the app.',
           ].join('\n'),
         },
         fen: START,
@@ -379,22 +383,22 @@ export const LESSONS: Lesson[] = [
     steps: [
       {
         text: {
-          el: 'Κάθε κίνηση γράφεται με το **γράμμα του κομματιού** και το **τετράγωνο** που πηγαίνει. Τα γράμματα είναι αγγλικά ή ελληνικά: **K / Ρ** βασιλιάς, **Q / Β** βασίλισσα, **R / Π** πύργος, **B / Α** αξιωματικός, **N / Ι** ίππος. Έτσι η ίδια κίνηση γράφεται **Nf3** ή **Ιf3**. Τα πιόνια δεν έχουν γράμμα: **e4** σημαίνει «πιόνι στο e4». Στα βιβλία και στο διαδίκτυο θα βρεις και τα δύο· εδώ διαλέγεις με το κουμπί **Nf3 / Ιf3** πάνω δεξιά.',
-          en: 'A move is written as the **piece letter** plus the **square** it goes to. The letters are English or Greek: **K / Ρ** king, **Q / Β** queen, **R / Π** rook, **B / Α** bishop, **N / Ι** knight, so the same move is **Nf3** or **Ιf3**. Pawns have no letter: **e4** means “pawn to e4”. Books and websites use both; here you choose with the **Nf3 / Ιf3** button at the top right.',
+          el: 'Κάθε κίνηση γράφεται με το **γράμμα του κομματιού** και το **τετράγωνο** που πηγαίνει. Υπάρχουν δύο σημειογραφίες. Στην αγγλική: **K** βασιλιάς, **Q** βασίλισσα, **R** πύργος, **B** αξιωματικός, **N** ίππος, στήλες **a–h**. Στην ελληνική: **Ρ**, **Β**, **Π**, **Α**, **Ι** και στήλες **α–θ**. Έτσι η ίδια κίνηση γράφεται `Nf3` ή `Ιζ3`. Τα πιόνια δεν έχουν γράμμα: `e4` (ή `ε4`) σημαίνει «πιόνι στο e4». Στα βιβλία και στο διαδίκτυο θα βρεις και τις δύο· εδώ διαλέγεις με το κουμπί **`Nf3` / `Ιζ3`** πάνω δεξιά.',
+          en: 'A move is written as the **piece letter** plus the **square** it goes to. There are two notations. English: **K** king, **Q** queen, **R** rook, **B** bishop, **N** knight, files **a–h**. Greek: **Ρ**, **Β**, **Π**, **Α**, **Ι** and files **α–θ**. So the same move is `Nf3` or `Ιζ3`. Pawns have no letter: `e4` (or `ε4`) means “pawn to e4”. Books and websites use both; here you choose with the **`Nf3` / `Ιζ3`** button at the top right.',
         },
         fen: 'rnbqkbnr/pppppppp/8/8/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1',
         shapes: [...arrows('e2', ['e4']), ...arrows('g1', ['f3'])],
       },
       {
         text: {
-          el: 'Άλλα σύμβολα: **x** τρώει (Nxe5 ή Ιxe5), **+** σαχ, **#** ματ, **O-O** μικρό ροκέ, **O-O-O** μεγάλο ροκέ. Τα **!** και **?** είναι σχόλια: καλή κίνηση ή λάθος.',
+          el: 'Άλλα σύμβολα: **x** τρώει (Nxe5), **+** σαχ, **#** ματ, **O-O** μικρό ροκέ, **O-O-O** μεγάλο ροκέ. Τα **!** και **?** είναι σχόλια: καλή κίνηση ή λάθος.',
           en: 'Other symbols: **x** captures (Nxe5), **+** check, **#** mate, **O-O** castles short, **O-O-O** castles long. **!** and **?** are comments: good move or mistake.',
         },
         exercise: {
           fen: START,
           task: {
-            el: 'Παίξε την κίνηση Nf3 (στα ελληνικά Ιf3).',
-            en: 'Play the move Nf3 (Ιf3 in Greek).',
+            el: 'Παίξε την κίνηση Nf3.',
+            en: 'Play the move Nf3.',
           },
           solution: ['g1f3'],
         },

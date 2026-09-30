@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { SanPipe } from '../../core/notation';
+import { SanPipe, SanTextPipe } from '../../core/notation';
 import { Board } from '../../chess/board/board';
 import { ChessRules, PgnError } from '../../chess/chess-rules';
 import { GameControls } from '../../chess/game-controls/game-controls';
@@ -37,6 +37,7 @@ import { GuessGame } from './guess-game';
   providers: [GameSession],
   imports: [
     SanPipe,
+    SanTextPipe,
     GuessGame,
     RouterLink,
     TranslocoPipe,

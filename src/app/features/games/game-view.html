@@ -83,10 +83,10 @@
               @if (n.atStart) {
                 <p class="note-label">{{ 'game.beforeStart' | transloco }}</p>
                 @if (g.summary) {
-                  <div class="prose note-body" [innerHTML]="g.summary | markdown"></div>
+                  <div class="prose note-body" [innerHTML]="g.summary | sanText | markdown"></div>
                 }
                 @if (n.comment) {
-                  <p class="note-body plain">{{ n.comment }}</p>
+                  <p class="note-body plain">{{ n.comment | sanText }}</p>
                 }
                 @if (!g.summary && !n.comment) {
                   <p class="note-empty">{{ 'game.stepHint' | transloco }}</p>
@@ -101,7 +101,7 @@
                   }
                 </div>
                 @if (n.comment) {
-                  <p class="note-body plain">{{ n.comment }}</p>
+                  <p class="note-body plain">{{ n.comment | sanText }}</p>
                 } @else {
                   <p class="note-empty">{{ 'game.noNote' | transloco }}</p>
                 }

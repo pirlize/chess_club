@@ -80,7 +80,7 @@
                   }
                 </p>
                 @if (move.comment) {
-                  <p class="note">{{ move.comment }}</p>
+                  <p class="note">{{ move.comment | sanText }}</p>
                 }
               }
             } @else {
@@ -92,7 +92,7 @@
                   {{ 'guess.reply' | transloco }} <strong>{{ moveLabel(r) | san }}</strong>
                 </p>
                 @if (r.comment) {
-                  <p class="note">{{ r.comment }}</p>
+                  <p class="note">{{ r.comment | sanText }}</p>
                 }
               </div>
             }
