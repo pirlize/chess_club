@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { MoveSounds } from '../../core/sound';
 import { Icon } from '../../ui/icon';
 import { GameSession } from '../game-session';
 
@@ -34,6 +35,7 @@ export class GameControls {
   readonly autoplay = input(true);
 
   protected readonly session = inject(GameSession);
+  protected readonly sounds = inject(MoveSounds);
   protected readonly playing = signal(false);
 
   constructor() {

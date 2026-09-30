@@ -10,6 +10,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { moveSound, MoveSounds } from '../../core/sound';
 import { BoardRenderer, type BoardHandle, type BoardView } from '../board-renderer';
 import type { BoardShape, Color, MoveInput } from '../model';
 
@@ -27,7 +28,9 @@ export class Board {
 
   private readonly host: HTMLElement = inject(ElementRef).nativeElement;
   private readonly renderer = inject(BoardRenderer);
+  private readonly sounds = inject(MoveSounds);
   private handle?: BoardHandle;
+  private shown?: BoardView;
 
   constructor() {
     afterNextRender(() => {
@@ -39,6 +42,12 @@ export class Board {
     effect(() => {
       const view = this.view();
       this.handle?.update(view);
+      // A new position reached by a move (not the first draw, a flip or arrows): play it.
+      const before = this.shown;
+      this.shown = view;
+      if (before && before.fen !== view.fen && view.lastMove) {
+        this.sounds.play(moveSound(before.fen, view));
+      }
     });
     inject(DestroyRef).onDestroy(() => this.handle?.destroy());
   }

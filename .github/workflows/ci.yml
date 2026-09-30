@@ -42,13 +42,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Wrangler steps go through scripts/ci-wrangler.sh, which turns a failure
+      # into an error annotation on the run page (readable without the logs).
       - name: Apply database migrations
         if: env.DEPLOY == 'true' && env.CLOUDFLARE_API_TOKEN != ''
-        run: npx wrangler d1 migrations apply chess-club --remote
+        run: bash scripts/ci-wrangler.sh "Migrations failed" d1 migrations apply chess-club --remote
 
       - name: Deploy to Cloudflare
         if: env.DEPLOY == 'true' && env.CLOUDFLARE_API_TOKEN != ''
-        run: npx wrangler deploy
+        run: bash scripts/ci-wrangler.sh "Deploy failed" deploy
 
       - name: Deploy skipped
         if: env.DEPLOY == 'true' && env.CLOUDFLARE_API_TOKEN == ''

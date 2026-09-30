@@ -737,5 +737,8 @@
     "hangingPiece": "Win a piece nobody defends.",
     "discoveredAttack": "Step aside and open a line for another piece.",
     "promotion": "Turn a pawn into a queen."
+  },
+  "sound": {
+    "label": "Move sounds"
   }
 }

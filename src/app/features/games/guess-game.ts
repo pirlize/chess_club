@@ -25,6 +25,7 @@ import {
 import { nagInfo } from '../../chess/nags';
 import { Language } from '../../core/i18n';
 import { Progress } from '../../core/progress';
+import { MoveSounds } from '../../core/sound';
 import { Toaster } from '../../core/toaster';
 import { Icon } from '../../ui/icon';
 
@@ -54,6 +55,7 @@ export class GuessGame {
 
   private readonly rules = inject(ChessRules);
   private readonly progress = inject(Progress);
+  protected readonly sounds = inject(MoveSounds);
   private readonly language = inject(Language);
   private readonly toaster = inject(Toaster);
 

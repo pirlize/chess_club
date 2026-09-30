@@ -48,5 +48,15 @@
         <app-icon name="eye" /> {{ 'puzzle.showSolution' | transloco }}
       </button>
     }
+    <button
+      type="button"
+      class="btn btn-ghost btn-icon btn-sm"
+      (click)="sounds.toggle()"
+      [attr.aria-pressed]="sounds.enabled()"
+      [attr.aria-label]="'sound.label' | transloco"
+      [title]="'sound.label' | transloco"
+    >
+      <app-icon [name]="sounds.enabled() ? 'volume' : 'volume-off'" />
+    </button>
   </span>
 </div>

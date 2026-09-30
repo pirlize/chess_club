@@ -3,6 +3,7 @@
 @let nextLabel = 'controls.next' | transloco;
 @let endLabel = 'controls.end' | transloco;
 @let flipLabel = 'controls.flip' | transloco;
+@let soundLabel = 'sound.label' | transloco;
 <button
   type="button"
   class="ctl"
@@ -64,4 +65,14 @@
   [title]="flipLabel"
 >
   <app-icon name="flip" />
+</button>
+<button
+  type="button"
+  class="ctl"
+  (click)="sounds.toggle()"
+  [attr.aria-pressed]="sounds.enabled()"
+  [attr.aria-label]="soundLabel"
+  [title]="soundLabel"
+>
+  <app-icon [name]="sounds.enabled() ? 'volume' : 'volume-off'" />
 </button>

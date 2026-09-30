@@ -12,6 +12,7 @@ import {
   untracked,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { MoveSounds } from '../../core/sound';
 import { Icon } from '../../ui/icon';
 import { Board } from '../board/board';
 import type { BoardView } from '../board-renderer';
@@ -50,6 +51,7 @@ export class PuzzleBoard {
   readonly solved = output<PuzzleResult>();
 
   private readonly rules = inject(ChessRules);
+  protected readonly sounds = inject(MoveSounds);
   private readonly timers = new Set<ReturnType<typeof setTimeout>>();
 
   // Everything resets when a new puzzle (fen) arrives.
